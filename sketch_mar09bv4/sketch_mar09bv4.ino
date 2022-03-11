@@ -1,3 +1,6 @@
+//march 11 22 
+//controls motor 1 and 2 mutually exclusively 
+//motors rotate ccw
 #define dbg(myFixedText, variableName) \
   Serial.print( F(#myFixedText " "  #variableName"=") ); \
   Serial.println(variableName);
