@@ -1,7 +1,3 @@
-//hi
-//march 11 22 
-//controls motor 1 and 2 mutually exclusively 
-//motors rotate ccw
 #define dbg(myFixedText, variableName) \
   Serial.print( F(#myFixedText " "  #variableName"=") ); \
   Serial.println(variableName);
@@ -113,32 +109,35 @@ void loop() {
 }
 
 // define functions for motors on / OFF
-void Motor1ON() {
+void Motor1ONccW() {
   digitalWrite(motor1pin1, HIGH);
   digitalWrite(motor1pin2, LOW);
-  digitalWrite(motor2pin1, LOW);
-  digitalWrite(motor2pin2, HIGH);
+}
+
+void Motor1ONcW()
+{
+  digitalWrite(motor1pin1, LOW);
+  digitalWrite(motor1pin2, HIGH);
 }
 
 void Motor1OFF() {
   digitalWrite(motor1pin1, LOW);
   digitalWrite(motor1pin2, LOW);
-  digitalWrite(motor2pin1, LOW);
+}
+
+void Motor2ONcW() {
+  digitalWrite(motor2pin1, HIGH);
   digitalWrite(motor2pin2, LOW);
 }
 
-void Motor2ON() {
-  digitalWrite(motor2pin1, HIGH);
-  digitalWrite(motor2pin2, LOW);
-  digitalWrite(motor1pin1, LOW);
-  digitalWrite(motor1pin2, HIGH);
+void Motor2ONccW() {
+  digitalWrite(motor2pin1, LOW);
+  digitalWrite(motor2pin2, HIGH);
 }
 
 void Motor2OFF() {
   digitalWrite(motor2pin1, LOW);
   digitalWrite(motor2pin2, LOW);
-  digitalWrite(motor1pin1, LOW);
-  digitalWrite(motor1pin2, LOW);
 }
 
 
@@ -150,7 +149,8 @@ void MotorSequenceStateMachine() {
     // Motor 1
     case motor1Start:
       MyMotorTimer = millis(); // store time-stamp when motor is switched on
-      Motor1ON();
+      Motor1ONccW();
+      Motor2ONccW();
       MyStateNr = motor1Run;
       dbg("motor1Start", MyMotorTimer);
       break; // jump immidiately to the code marked with "xx-EXIT-xx"
@@ -164,6 +164,7 @@ void MotorSequenceStateMachine() {
     case motor1Stop:
       MyMotorTimer = millis(); // store time-stamp when motor is switched OFF
       Motor1OFF();
+      Motor2OFF();
       MyStateNr = motor1WaitOff;
       dbg("motor1Stop", MyMotorTimer);
       break; // jump immidiately to the code marked with "xx-EXIT-xx"
@@ -185,7 +186,8 @@ void MotorSequenceStateMachine() {
     // Motor 2
     case motor2Start:
       MyMotorTimer = millis(); // store time-stamp when motor is switched on
-      Motor2ON();
+      Motor2ONcW();
+      Motor1ONcW();
       MyStateNr = motor2Run;
       dbg("motor2Start", MyMotorTimer);
       break; // jump immidiately to the code marked with "xx-EXIT-xx"
@@ -199,6 +201,7 @@ void MotorSequenceStateMachine() {
     case motor2Stop:
       MyMotorTimer = millis(); // store time-stamp when motor is switched OFF
       Motor2OFF();
+      Motor1OFF();
       MyStateNr = motor2WaitOff;
       dbg("motor2Stop", MyMotorTimer);
       break; // jump immidiately to the code marked with "xx-EXIT-xx"
